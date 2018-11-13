@@ -1,0 +1,175 @@
+#include "Object.h"
+Object::Object()
+{
+
+
+}
+
+Object::Object(int id)
+{
+	this->id = id;
+
+}
+
+
+
+
+Object::~Object()
+{
+	objByProx.end();
+}
+
+
+double Object::getOrigDoubleAttr(int index)
+{
+	return origDoubleAttrs[index];
+}
+
+int Object::getOrigIntAttr(int index)
+{
+	return origIntAttrs[index];
+}
+
+
+void Object::setOrigDoubleAttrs(vector <double> origDoubleAttrs)
+{
+	this->origDoubleAttrs = origDoubleAttrs;
+}
+
+void Object::addNewDoubleOrigAttr(double value)
+{
+	this->origDoubleAttrs.push_back(value);
+}
+
+void Object::addNewIntOrigAttr(int value)
+{
+	this->origIntAttrs.push_back(value);
+}
+
+void Object::setOrigDoubleAttr(double origDoubleAttr, int index)
+{
+	this->origDoubleAttrs[index] = origDoubleAttr;
+}
+
+void Object::setOrigIntAttrs(vector <int> origIntAttrs)
+{
+	this->origIntAttrs = origIntAttrs;
+}
+
+
+double Object::getNormDoubleAttr(int index)
+{
+	return normDoubleAttrs[index];
+}
+
+double Object::getNormIntAttr(int index)
+{
+	return normIntAttrs[index];
+}
+
+
+
+
+void Object::addNewDoubleNormAttr(double value) {
+	this->normDoubleAttrs.push_back(value);
+}
+
+void Object::addNewIntNormAttr(int value) {
+	this->normIntAttrs.push_back(value);
+}
+
+void Object::setNormDoubleAttr(double normDoubleAttr, int index)
+{
+	this->normDoubleAttrs[index] = normDoubleAttr;
+}
+
+void Object::setNormDoubleAttrs(vector <double> values)
+{
+	this->normDoubleAttrs = values;
+
+}
+
+
+
+
+
+
+int Object::getId()
+{
+	return this->id;
+}
+
+Object *Object::getObject()
+{
+	return this;
+}
+
+void Object::setDissimilaritySameCluster(double d)
+{
+	this->dissimilaritySameCluster = d;
+}
+
+double Object::getDissimilaritySameCluster()
+{
+	return this->dissimilaritySameCluster;
+}
+
+void Object::setDissimilarityOtherCluster(double d)
+{
+	this->dissimilaritySameCluster = d;
+}
+
+double Object::getDissimilarityOtherCluster()
+{
+	return this->dissimilaritySameCluster;
+}
+
+
+
+void Object::setNumEdges(int size)
+{
+	edges.reserve(size);
+}
+
+void Object::addEdge(int id, double pesoA, int idDest)
+{
+	Edge* a = new Edge(id, pesoA, idDest);
+	if (id == id)
+		grau += 2;
+	else
+		grau += 1;
+	edges.push_back(*a);
+}
+
+vector <Edge> Object::getEdges()
+{
+	return edges;
+}
+
+void Object::removeEdge(int id)
+{
+
+	int count = 0;
+	for (vector <Edge>::iterator it = edges.begin(); it != edges.end(); it++) {
+		//cout << it->getDest() << "-" << id << endl;
+		if (it->getDest() == id) {
+			break;
+		}
+		count++;
+	}
+	edges.erase(edges.begin() + count);
+}
+
+
+
+double Object::getDistance(int id) {
+	for (vector <Edge>::iterator it = edges.begin(); it != edges.end(); it++) {
+		//cout << it->getDest() << "-" << id << endl;
+		if (it->getDest() == id) {
+			return it->getWeightEdge();
+		}
+	}
+	return 0.0;
+}
+
+
