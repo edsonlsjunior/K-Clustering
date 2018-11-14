@@ -1,6 +1,6 @@
 #pragma once
 #include "Object.h";
-#include "Solution.h"
+
 #include "ShortSolution.h"
 class KMeansCluster {
 private:

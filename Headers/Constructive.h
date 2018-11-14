@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Node.h";
+
 #include "Object.h";
 #include "ShortSolution.h"
 #include <ctime>
@@ -26,7 +26,7 @@ public:
 	void buildClustersRandom();
 	void buildClustersRandom2();
 
-	vector <Node> getGraph();
+	//vector <Node> getGraph();
 	vector <vector<int>> getClusters();
 	vector <int> getObjByCluster();
 

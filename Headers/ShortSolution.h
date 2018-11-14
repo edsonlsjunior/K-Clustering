@@ -1,10 +1,10 @@
 #pragma once
-#include "stdafx.h"
+
 #include <vector>
 #include <iostream>
 #include "Object.h"
 #include <limits>
-#include "Node.h"
+
 using namespace std;
 class ShortSolution
 {

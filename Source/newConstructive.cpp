@@ -1,9 +1,9 @@
-﻿#include "stdafx.h"
-#include "Constructive.h"
+﻿
+#include "../Headers/Constructive.h"
 #include <list>
 
 
-Constructive::Constructive(int numVertex, int numClusters, vector <Object*> *objects, int type)
+Constructive::Constructive(int numVertex, int numClusters, vector <Object*> objects, int type)
 {
 	solution = new ShortSolution(numVertex, numClusters);
 	this->objects = objects;
