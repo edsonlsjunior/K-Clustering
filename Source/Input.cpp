@@ -109,15 +109,14 @@ void Input::normEntry()
 		int minIntAttrs[numAttr], maxIntAttrs[numAttr];
 		for (int i = 0; i < numAttr; i++) {
 			minIntAttrs[i] = getMinIntAttr(i);
-			cout << minIntAttrs[i] << endl;
 			maxIntAttrs[i] = getMaxIntAttr(i);
-			cout << maxIntAttrs[i] << endl;
+
 		}
 
 		for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it) {
 			normAttrs[0] = ( (double)(  (*it)->getOrigIntAttr(0) - minIntAttrs[0] ) / (double)(maxIntAttrs[0] - minIntAttrs[0]) );
 			(*it)->addNewDoubleNormAttr(normAttrs[0]);
-			normAttrs[1] = ((double) (*it)->getOrigIntAttr(1) - minIntAttrs[1]) / (double) (minIntAttrs[1] - maxIntAttrs[1]);
+			normAttrs[1] = ((double) (*it)->getOrigIntAttr(1) - minIntAttrs[1]) / (double) (maxIntAttrs[1] - minIntAttrs[1]);
 			(*it)->addNewDoubleNormAttr(normAttrs[1]);
 		}
 		cout << "Entry normalized" << endl;
@@ -193,18 +192,6 @@ double Input::getMaxNormDoubleAttr(int index)
 
 
 
-double Input::getMinDoubleAttr(int index)
-{
-	
-	double minAttr = objects[0]->getOrigDoubleAttr(index);
-	vector <Object*>::iterator it;
-	for (it = objects.begin(); it != objects.end(); ++it) {
-		if (minAttr > (*it)->getOrigDoubleAttr(index)) {
-			minAttr = (*it)->getOrigDoubleAttr(index);
-		}
-	}
-	return minAttr;
-}
 
 
 double Input::getMinNormDoubleAttr(int index)
@@ -243,6 +230,20 @@ int Input::getMaxNormIntAttr(int index)
 	}
 	return maxAttr;
 }
+
+double Input::getMinDoubleAttr(int index)
+{
+
+	double minAttr = objects[0]->getOrigDoubleAttr(index);
+	vector <Object*>::iterator it;
+	for (it = objects.begin(); it != objects.end(); ++it) {
+		if (minAttr > (*it)->getOrigDoubleAttr(index)) {
+			minAttr = (*it)->getOrigDoubleAttr(index);
+		}
+	}
+	return minAttr;
+}
+
 
 int Input::getMinIntAttr(int index)
 {

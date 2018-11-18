@@ -22,9 +22,11 @@ public:
 
 	vector <Edge> getCandidatesEdges();
 
-	void buildClusters();
-	void buildClustersRandom();
-	void buildClustersRandom2();
+
+	void randomMSTClustering();
+	void meansClustering();
+
+	int findNearestMean(unsigned int id);
 
 	//vector <Node> getGraph();
 	vector <vector<int>> getClusters();
@@ -37,6 +39,7 @@ public:
 
 	ShortSolution * getSolution();
 
+	vector <unsigned int> means;
 
 
 private:

@@ -86,7 +86,7 @@ int KMeans::findNearestMean(Object *obj)
 	vector <Object> ::iterator mean;
 	int index=0;
 	int count = 0;
-	double minDist = euclideanDistance(obj, &means[1]);
+	double minDist = euclideanDistance(obj, &means[0]);
 	for (mean = means.begin();mean != means.end();++mean) {
 		double dist = euclideanDistance(obj, &*mean);
 		if (minDist > dist) {

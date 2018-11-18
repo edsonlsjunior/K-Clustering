@@ -127,168 +127,8 @@ vector<Edge> Constructive::getCandidatesEdges()
 	return candidatesEdges;
 }
 
-void Constructive::buildClusters()
-{
-	vector <int> clusterByObj;
-	Initialize();
-	solution->setEdges(candidatesEdges);
-	numConvexComponents = objects.size();
-	int numVertex = objects.size();
-	int numEdges = candidatesEdges.size();
-	vector <Edge> auxCandidatesEdges = candidatesEdges;
-	int j = 0;
 
-
-
-	int count = 0;
-	while (numConvexComponents > numClusters) {
-		int parentSrc = find(auxCandidatesEdges[j].getSrc());
-		int parentDest = find(auxCandidatesEdges[j].getDest());
-		if (parentSrc != parentDest) {
-			unionSETs(auxCandidatesEdges[j].getSrc(), auxCandidatesEdges[j].getDest());
-			edgesInSolution.push_back(auxCandidatesEdges[j]);
-		}
-		count++;
-		j++;
-	}
-
-
-
-
-
-	for (int i = 0; i < numObjs; i++) {
-		objByCluster[i] = find(i + 1);
-	}
-
-	int clusterIndex = 0; // Contador para os ids dos objetos
-	int conta = 0;
-
-	for (vector <int>::iterator c = objByCluster.begin(); c != objByCluster.end(); c++) {
-		//cout << *c << endl;
-		vector <int>::iterator b;
-		for (b = objByCluster.begin(); b != c; b++) {
-			if (*c == *b)
-				break;
-		}
-		if (c == b) {
-			//cout << clusterIndex << endl;
-			structClusters[clusterIndex].idCluster = *c;
-			clusterIndex++;
-		}
-	}
-
-	//Adciona os objetos na solução
-	count = 0;
-	//cout << "Cluster Index: " << clusterIndex << endl;
-	for (vector <int>::iterator it = objByCluster.begin(); it != objByCluster.end(); it++) {
-		for (vector <struct cluster>::iterator c = structClusters.begin(); c != structClusters.end(); c++) {
-			if (c->idCluster == *it) {
-				solution->addObject(count + 1, c->idClusterInSolution);
-				clusterByObj.push_back(c->idClusterInSolution);
-			}
-		}
-		count++;
-	}
-
-	solution->setObjectByCluster(clusterByObj);
-
-}
-
-void Constructive::buildClustersRandom()
-{
-	vector <int> clusterByObj;
-	Initialize();
-
-	solution->setEdges(candidatesEdges);
-
-	srand(time(NULL));
-	numConvexComponents = objects.size();
-	int numVertex = objects.size();
-	int numEdges = candidatesEdges.size();
-	vector <Edge> auxCandidatesEdges = candidatesEdges;
-	int j = 0;
-	edgesInSolution.reserve(auxCandidatesEdges.size());
-
-
-	double sumDist = 0;
-	int last = auxCandidatesEdges.size() * rndParameter;
-	for (; j <= last; j++) {
-		sumDist += (1 - auxCandidatesEdges[j].getWeightEdge());
-	}
-
-	while (numConvexComponents > numClusters) {
-		//j = ceil((rand() % last));
-
-		int k = ceil((rand() % (int)(sumDist * 1000)));
-		int sum = 0;
-		//cout << "k=" << k << endl << "sumDist=" << sumDist * 1000 << endl;
-		for (j = 0; sum + (1 - auxCandidatesEdges[j].getWeightEdge()) * 1000 < k && j < last; j++) {
-			sum += (1 - auxCandidatesEdges[j].getWeightEdge()) * 1000;
-			/*cout  << "j=" << j << "\tw=" << auxCandidatesEdges[j].getWeightEdge() <<
-			"\t1-w=" << 1-auxCandidatesEdges[j].getWeightEdge() <<
-			"\tparc=" << sum + (1-auxCandidatesEdges[j].getWeightEdge())*1000 << "\tk=" << k << endl << endl;*/
-		}
-
-		int parentX = find(auxCandidatesEdges[j].getSrc());
-		int parentY = find(auxCandidatesEdges[j].getDest());
-		if (parentX != parentY) { //Se os "pais" deles forem os mesmos significa que h� um circulo
-			unionSETs(auxCandidatesEdges[j].getSrc(), auxCandidatesEdges[j].getDest());
-			edgesInSolution.push_back(auxCandidatesEdges[j]);
-		}
-
-
-
-		sumDist -= (1 - auxCandidatesEdges[j].getWeightEdge());
-		auxCandidatesEdges.erase(auxCandidatesEdges.begin() + j);
-		if (last != auxCandidatesEdges.size() * rndParameter)
-			last = auxCandidatesEdges.size() * rndParameter;
-		else
-			sumDist += (1 - auxCandidatesEdges[last].getWeightEdge());
-	}
-
-	//cout << "Componentex Conexas Prontas" << endl;
-
-	int count = 0;;
-	for (int i = 0; i < numObjs; i++) {
-		objByCluster[i] = find(i + 1);
-	}
-
-
-
-	int clusterIndex = 0; // Contador para os ids dos objetos
-
-
-	for (vector <int>::iterator c = objByCluster.begin(); c != objByCluster.end(); c++) {
-		//cout << *c << endl;
-		vector <int>::iterator b;
-		for (b = objByCluster.begin(); b != c; b++) {
-			if (*c == *b)
-				break;
-		}
-		if (c == b) {
-			//cout << clusterIndex << endl;
-			structClusters[clusterIndex].idCluster = *c;
-			clusterIndex++;
-		}
-	}
-
-	//cout << "Componentex Conexas Prontas" << endl;
-	//Adciona os objetos na solução
-
-	for (vector <int>::iterator it = objByCluster.begin(); it != objByCluster.end(); it++) {
-		for (vector <struct cluster>::iterator c = structClusters.begin(); c != structClusters.end(); c++) {
-			if (c->idCluster == *it) {
-				solution->addObject(count + 1, c->idClusterInSolution);
-				clusterByObj.push_back(c->idClusterInSolution);
-			}
-		}
-		count++;
-	}
-
-	solution->setObjectByCluster(clusterByObj);
-}
-
-void Constructive::buildClustersRandom2()
+void Constructive::randomMSTClustering()
 {
 	vector <int> clusterByObj;
 	vector <int> clusterId;
@@ -344,36 +184,69 @@ void Constructive::buildClustersRandom2()
 	}
 
 	solution->setObjectByCluster(clusterByObj);
-	/*
-	////cout << *c << endl;
-	//vector <int>::iterator b;
-	//for (b = objByCluster.begin(); b != c; b++) {
-	//	if (*c == *b)
-	//		break;
-	//}
-	//if (c == b) {
-	//	//cout << clusterIndex << endl;
-	//	structClusters[clusterIndex].idCluster = *c;
-	//	clusterIndex++;
-	//}
+
+}
+
+void Constructive::meansClustering()
+{
+
+	vector <int> clusterByObj;
+	vector <int> clusterId;
+	Initialize();
+	solution->setEdges(candidatesEdges);
+
+
+
+
+	//means.assign(numClusters, 0);
+	int count = 0;
+	while( count < numClusters ) {
+		unsigned int id = rand() % numObjs;
+		bool br = false;
+		for (auto sortedId  : means) {
+			if (objects[id - 1]->getId() == sortedId) {
+				br = true;
+			}
+		}
+		if (!br) {
+			means.push_back(id);
+			count++;
+		}
+	}
+	
+	for (auto obj : objects) {
+		int clusterID = findNearestMean(obj->getId());
+		objByCluster[obj->getId() - 1] = clusterID;
+		clusters[clusterID].push_back(obj->getId());
+		solution->addObject(obj->getId(), clusterID);
 	}
 
-	//Adciona os objetos na solução
-	count = 0;
-	//cout << "Cluster Index: " << clusterIndex << endl;
-	for (vector <int>::iterator it = objByCluster.begin(); it != objByCluster.end(); it++) {
-	for (vector <struct cluster>::iterator c = structClusters.begin(); c != structClusters.end(); c++) {
-	if (c->idCluster == *it) {
-	solution->addObject(count + 1, c->idClusterInSolution);
-	clusterByObj.push_back(c->idClusterInSolution);
+	solution->setObjectByCluster(objByCluster);
 
+	for (auto k : objByCluster) {
+		cout << k << endl;
 	}
-	}
-	count++;
-	}
+	
+}
 
-	solution->setObjectByCluster(clusterByObj);
-	/**/
+int Constructive::findNearestMean(unsigned int id)
+{
+	// O(n)
+	vector <Object> ::iterator mean;
+	int index = 0;
+	int count = 0;
+	
+	double minDist = euclideanDistance(objects[id-1], objects[means[0]]);
+//	double minDist = objects[id - 1]->getDistance(means[0]);
+	for (auto mean : means) {
+		double dist = euclideanDistance(objects[id - 1], objects[mean]);
+		if (minDist > dist) {
+			minDist = dist;
+			index = count;
+		}
+		count++;
+	}
+	return index;
 }
 
 
