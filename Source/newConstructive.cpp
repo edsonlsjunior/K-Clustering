@@ -105,6 +105,15 @@ void Constructive::buildGraph()
 }
 
 
+double Constructive::euclideanDistance(double xa, double ya, double xb, double yb)
+{
+	double dist = 0.0;
+	int numAttr = 2;
+	dist += pow((xa - xb), 2);
+	dist += pow((ya - yb), 2);
+	return sqrt(dist);
+}
+
 double Constructive::euclideanDistance(Object *a, Object *b)
 {
 	double dist = 0.0;
@@ -195,21 +204,22 @@ void Constructive::meansClustering()
 	Initialize();
 	solution->setEdges(candidatesEdges);
 
-
-
-
 	//means.assign(numClusters, 0);
 	int count = 0;
+	mean m;
 	while( count < numClusters ) {
 		unsigned int id = rand() % numObjs;
+		m.id = id;
+		m.x = objects[id - 1]->getNormDoubleAttr(0);
+		m.y = objects[id - 1]->getNormDoubleAttr(1);
 		bool br = false;
 		for (auto sortedId  : means) {
-			if (objects[id - 1]->getId() == sortedId) {
+			if (objects[id - 1]->getId() == sortedId.id) {
 				br = true;
 			}
 		}
 		if (!br) {
-			means.push_back(id);
+			means.push_back(m);
 			count++;
 		}
 	}
@@ -222,24 +232,20 @@ void Constructive::meansClustering()
 	}
 
 	solution->setObjectByCluster(objByCluster);
-
-	for (auto k : objByCluster) {
-		cout << k << endl;
-	}
 	
 }
 
+
+
 int Constructive::findNearestMean(unsigned int id)
 {
-	// O(n)
-	vector <Object> ::iterator mean;
+	// O(2*n)
+
 	int index = 0;
 	int count = 0;
-	
-	double minDist = euclideanDistance(objects[id-1], objects[means[0]]);
-//	double minDist = objects[id - 1]->getDistance(means[0]);
+	double minDist = euclideanDistance(objects[id-1], objects[means[0].id]);
 	for (auto mean : means) {
-		double dist = euclideanDistance(objects[id - 1], objects[mean]);
+		double dist = euclideanDistance(objects[id - 1], objects[mean.id]);
 		if (minDist > dist) {
 			minDist = dist;
 			index = count;

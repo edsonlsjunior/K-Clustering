@@ -16,6 +16,7 @@ public:
 	~Constructive();
 
 	void buildGraph();
+	double euclideanDistance(double xa, double ya, double xb, double yb);
 	double euclideanDistance(Object * a, Object * b);
 
 	void sortEdges();
@@ -39,11 +40,11 @@ public:
 
 	ShortSolution * getSolution();
 
-	vector <unsigned int> means;
+	
 
 
 private:
-	
+	vector <struct mean> means;
 
 	vector <Object*> objects;
 
@@ -93,4 +94,10 @@ struct cluster {
 	vector <int> objsId;
 	int idCluster;
 	int idClusterInSolution;
+};
+
+struct mean {
+	unsigned int id;
+	double x;
+	double y;
 };
