@@ -7,7 +7,7 @@ using namespace std;
 
 Input::Input()
 {
-	this->objects.reserve(300);
+
 	
 
 }
@@ -31,7 +31,7 @@ Input * Input::getInstance()
 
 void Input::addObject(Object *object)
 {
-	this->objects.push_back(object);
+	this->objects->push_back(object);
 }
 
 
@@ -82,7 +82,7 @@ void Input::readObjectInstances()
 		cerr << "Couldn't open file!" << endl;
 	}
 	f.close();
-	this->objects = objects;
+	this->objects = &objects;
 }
 
 void Input::normEntry()
@@ -97,7 +97,7 @@ void Input::normEntry()
 			maxDoubleAttrs[i] = getMaxDoubleAttr(i);
 		}
 
-		for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it) {
+		for (std::vector<Object*>::iterator it = objects->begin(); it != objects->end(); ++it) {
 			normAttrs[0] = (((*it)->getOrigDoubleAttr(0) - minDoubleAttrs[0]) / (maxDoubleAttrs[0] - minDoubleAttrs[0]));
 			(*it)->addNewDoubleNormAttr(normAttrs[0]);
 			normAttrs[1] = ((*it)->getOrigDoubleAttr(1) - minDoubleAttrs[1]) / (maxDoubleAttrs[1] - minDoubleAttrs[1]);
@@ -113,7 +113,7 @@ void Input::normEntry()
 
 		}
 
-		for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it) {
+		for (std::vector<Object*>::iterator it = objects->begin(); it != objects->end(); ++it) {
 			normAttrs[0] = ( (double)(  (*it)->getOrigIntAttr(0) - minIntAttrs[0] ) / (double)(maxIntAttrs[0] - minIntAttrs[0]) );
 			(*it)->addNewDoubleNormAttr(normAttrs[0]);
 			normAttrs[1] = ((double) (*it)->getOrigIntAttr(1) - minIntAttrs[1]) / (double) (maxIntAttrs[1] - minIntAttrs[1]);
@@ -158,7 +158,7 @@ void Input::readNormEntry()
 		cerr << "Couldn't open file!" << endl;
 	}
 	f.close();
-	this->objects = objects;
+	this->objects = &objects;
 }
 
 
@@ -169,7 +169,7 @@ double Input::getMaxDoubleAttr(int index)
 	
 	double maxAttr = objects[0]->getOrigDoubleAttr(index);
 	vector <Object*>::iterator it;
-	for (it = objects.begin(); it != objects.end(); ++it) {
+	for (it = objects->begin(); it != objects->end(); ++it) {
 		if (maxAttr < (*it)->getOrigDoubleAttr(index)) {
 			maxAttr = (*it)->getOrigDoubleAttr(index);
 		}
@@ -182,7 +182,7 @@ double Input::getMaxNormDoubleAttr(int index)
 	
 	double maxAttr = objects[0]->getNormDoubleAttr(index);
 	vector <Object*>::iterator it;
-	for (it = objects.begin(); it != objects.end(); ++it) {
+	for (it = objects->begin(); it != objects->end(); ++it) {
 		if (maxAttr < (*it)->getNormDoubleAttr(index)) {
 			maxAttr = (*it)->getNormDoubleAttr(index);
 		}
@@ -199,7 +199,7 @@ double Input::getMinNormDoubleAttr(int index)
 	
 	double minAttr = objects[0]->getNormDoubleAttr(index);
 	vector <Object*>::iterator it;
-	for (it = objects.begin(); it != objects.end(); ++it) {
+	for (it = objects->begin(); it != objects->end(); ++it) {
 		if (minAttr > (*it)->getNormDoubleAttr(index)) {
 			minAttr = (*it)->getNormDoubleAttr(index);
 		}
@@ -211,7 +211,7 @@ int Input::getMaxIntAttr(int index)
 {
 	int maxAttr = objects[0]->getOrigIntAttr(index);
 	vector <Object*>::iterator it;
-	for (it = objects.begin(); it != objects.end(); ++it) {
+	for (it = objects->begin(); it != objects->end(); ++it) {
 		if (maxAttr < (*it)->getOrigIntAttr(index)) {
 			maxAttr = (*it)->getOrigIntAttr(index);
 		}
@@ -223,7 +223,7 @@ int Input::getMaxNormIntAttr(int index)
 {
 	int maxAttr = objects[0]->getOrigIntAttr(index);
 	vector <Object*>::iterator it;
-	for (it = objects.begin(); it != objects.end(); ++it) {
+	for (it = objects->begin(); it != objects->end(); ++it) {
 		if (maxAttr < (*it)->getNormIntAttr(index)) {
 			maxAttr = (*it)->getNormIntAttr(index);
 		}
@@ -236,7 +236,7 @@ double Input::getMinDoubleAttr(int index)
 
 	double minAttr = objects[0]->getOrigDoubleAttr(index);
 	vector <Object*>::iterator it;
-	for (it = objects.begin(); it != objects.end(); ++it) {
+	for (it = objects->begin(); it != objects->end(); ++it) {
 		if (minAttr > (*it)->getOrigDoubleAttr(index)) {
 			minAttr = (*it)->getOrigDoubleAttr(index);
 		}
@@ -249,7 +249,7 @@ int Input::getMinIntAttr(int index)
 {
 	int minAttr = objects[0]->getOrigIntAttr(index);
 	vector <Object*>::iterator it;
-	for (it = objects.begin(); it != objects.end(); ++it) {
+	for (it = objects->begin(); it != objects->end(); ++it) {
 		if (minAttr > (*it)->getOrigIntAttr(index)) {
 			minAttr = (*it)->getOrigIntAttr(index);
 		}
@@ -261,7 +261,7 @@ int Input::getMinNormIntAttr(int index)
 {
 	int minAttr = objects[0]->getOrigIntAttr(index);
 	vector <Object*>::iterator it;
-	for (it = objects.begin(); it != objects.end(); ++it) {
+	for (it = objects->begin(); it != objects->end(); ++it) {
 		if (minAttr > (*it)->getNormIntAttr(index)) {
 			minAttr = (*it)->getNormIntAttr(index);
 		}
@@ -269,14 +269,16 @@ int Input::getMinNormIntAttr(int index)
 	return minAttr;
 }
 
-vector<Object*> Input::getObjects()
+
+
+vector<Object*>* Input::getObjects()
 {
-	return this->objects;
+	return objects;
 }
 
 int Input::getNumObjects()
 {
-	return this->objects.size();
+	return this->objects->size();
 }
 
 void Input::setInputPath(string path)
@@ -303,7 +305,7 @@ void Input::saveNormEntry()
 
 	a.open(filePath);
 
-	int numObjs = objects.size();
+	int numObjs = objects->size();
 	int numAttrs = 2;  // BAD CODE 
 
 	a << numObjs;
@@ -312,7 +314,7 @@ void Input::saveNormEntry()
 	a << "\n";
 
 
-	for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it) 
+	for (std::vector<Object*>::iterator it = objects->begin(); it != objects->end(); ++it)
 		a << (*it)->getId() << "," << (*it)->getNormDoubleAttr(0) << "," << (*it)->getNormDoubleAttr(1) << "\n" << endl;
 	
 
@@ -325,4 +327,33 @@ void Input::saveNormEntry()
 void Input::setType(int type)
 {
 	this->type = type;
+}
+
+
+void Input::buildGraph()
+{
+	for (int i = 0; i < numObjs; i++) {
+		for (int j = 0; j < numObjs; j++) {
+			if (i != j) {
+				double distance = euclideanDistance(objects[i], objects[j]);
+
+			}
+			else if (i > j) {
+				double distance = euclideanDistance(objects[i], objects[j]);
+				objects[i]->addEdge(objects[i]->getId(), distance, objects[j]->getId());
+			}
+
+		}
+	}
+}
+
+
+double Input::euclideanDistance(Object *a, Object *b)
+{
+	double dist = 0.0;
+	int numAttr = 2;
+	for (int i = 0; i<numAttr; i++)
+		dist += pow((a->getNormDoubleAttr(i) - b->getNormDoubleAttr(i)), 2);
+
+	return sqrt(dist);
 }

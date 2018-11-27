@@ -42,7 +42,7 @@ public:
 
 	
 
-	vector <Object*>  getObjects();
+	vector <Object*>  *getObjects();
 
 	int getNumObjects();
 
@@ -52,15 +52,19 @@ public:
 
 	void setType(int type);
 
+	void buildGraph();
+
+	double euclideanDistance(Object * a, Object * b);
+
 
 private:
 	Input();
 
-	int numObj;
+	int numObjs;
 
 	static Input *instance;
 
-	vector <Object*> objects;
+	vector <Object*> *objects;
 
 	vector <double> simiByMetric;
 

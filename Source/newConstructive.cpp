@@ -60,18 +60,13 @@ void Constructive::Initialize() {
 Constructive::~Constructive()
 {
 	delete solution;
+	for (auto o : objects) {
+		delete o;
+	}
 }
 
 void Constructive::buildGraph()
 {
-
-	/*for (int i = 0; i < numObjs; i++) {
-	Node no = Node();
-	no.setID(objects[i]->getId());
-	no.setX(objects[i]->getNormDoubleAttr(0));
-	no.setY(objects[i]->getNormDoubleAttr(1));
-	graph.push_back(no);
-	}*/
 
 	for (int i = 0; i < numObjs; i++) {
 		for (int j = 0; j < numObjs; j++) {
@@ -98,8 +93,6 @@ void Constructive::buildGraph()
 	sortEdges();
 	
 	cout << "Grafo construido" << endl;
-
-
 
 
 }
