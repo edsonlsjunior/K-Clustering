@@ -97,6 +97,8 @@ void KMeans::buildClusters() {
 	int i = 0;
 	vector <Object*> ::iterator it;
 	it = objects->begin();
+	ShortSolution *newSol = new ShortSolution(solution->getNumObjs(), solution->getNumClusters());
+	newSol->means = solution->means;
 	// for each object find nearest centroid
 	//Quadratic O(n²)
 	//Aloca cada objeto apra um mean 
@@ -104,6 +106,7 @@ void KMeans::buildClusters() {
 		//test convergence
 		while (it != objects->end()) {
 			int mean = findNearestMean((*it));
+			//newSol.addObject((*it)->getId(), mean);
 			solution->addObject((*it)->getId(), mean);
 			++it;
 		}
@@ -117,15 +120,22 @@ void KMeans::buildClusters() {
 			//0 and 1 are dimensions
 			mediaX = getNewCentroid(j, 0);
 			mediaY = getNewCentroid(j, 1);
-			solution->means->at(j).x = mediaX;
-			solution->means->at(j).y = mediaY;
+			newSol.means->at(j).x = mediaX;
+			
+			newSol.means->at(j).y = mediaY;
 			//means[j].setNormDoubleAttr(mediaX, 0);
 			//means[j].setNormDoubleAttr(mediaX, 1);
 		}
 
 	}
+	newSol.calculateSilhouette();
 	solution->calculateSilhouette();
-	cout << "KMeans:" << solution->getSilhouette() << endl;
+	if (newSol.getSilhouette() > solution->getSilhouette()) {
+		solution = &newSol;
+		cout << "trocou" << endl;
+	}
+		
+	cout << "KMeans:" << newSol.getSilhouette() << endl;
 }
 
 

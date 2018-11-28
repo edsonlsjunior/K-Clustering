@@ -2,6 +2,7 @@
 #include "Object.h";
 #include <limits>
 #include "ShortSolution.h"
+#include <cstdlib> 
 class KMeansCluster {
 private:
 	int idCluster;
