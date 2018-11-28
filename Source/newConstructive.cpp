@@ -3,13 +3,13 @@
 #include <list>
 
 
-Constructive::Constructive(int numVertex, int numClusters, vector <Object*> objects, int type)
+Constructive::Constructive(int numVertex, int numClusters, vector <Object*> *objects, int type)
 {
 	solution = new ShortSolution(numVertex, numClusters);
 	this->objects = objects;
 	this->numObjs = numVertex;
 	this->numClusters = numClusters;
-	this->graph = objects;
+
 }
 
 
@@ -17,7 +17,7 @@ void Constructive::Initialize() {
 	//Inicializo os clusters
 	//1
 	solution = new ShortSolution(this->numObjs, numClusters);
-	solution->setObjects(graph);
+	solution->setObjects(objects);
 	vector <int> a;
 	clusters.clear();
 	clusters.assign(numClusters, a);
@@ -60,42 +60,14 @@ void Constructive::Initialize() {
 Constructive::~Constructive()
 {
 	delete solution;
-	for (auto o : objects) {
+	for (auto o : *objects) {
 		delete o;
 	}
+
+	delete objects;
 }
 
-void Constructive::buildGraph()
-{
 
-	for (int i = 0; i < numObjs; i++) {
-		for (int j = 0; j < numObjs; j++) {
-			if (i != j) {
-				double distance = euclideanDistance(objects[i], objects[j]);
-				graph[i]->addEdge(graph[i]->getId(), distance, graph[j]->getId());
-			}
-			else if (i > j) {
-				double distance = euclideanDistance(objects[i], objects[j]);
-				graph[i]->addEdge(graph[i]->getId(), distance, graph[j]->getId());
-				objects[i]->addEdge(objects[i]->getId(), distance, objects[j]->getId());
-			}
-
-		}
-	}
-
-	// define a lista de candidatos
-	for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it) {
-		vector <Edge> edge = (*it)->getEdges();
-		for (vector <Edge>::iterator a = edge.begin(); a != edge.end(); a++) {
-			candidatesEdges.push_back(*a);
-		}
-	}
-	sortEdges();
-	
-	cout << "Grafo construido" << endl;
-
-
-}
 
 
 double Constructive::euclideanDistance(double xa, double ya, double xb, double yb)
@@ -137,8 +109,8 @@ void Constructive::randomMSTClustering()
 	Initialize();
 	solution->setEdges(candidatesEdges);
 	srand(time(NULL));
-	numConvexComponents = objects.size();
-	int numVertex = objects.size();
+	numConvexComponents = objects->size();
+	int numVertex = objects->size();
 	int numEdges = candidatesEdges.size();
 	list <Edge> auxCandidatesEdges;
 	int j = 0;
@@ -199,15 +171,15 @@ void Constructive::meansClustering()
 
 	//means.assign(numClusters, 0);
 	int count = 0;
-	mean m;
+	 mean m;
 	while( count < numClusters ) {
 		unsigned int id = rand() % numObjs;
 		m.id = id;
-		m.x = objects[id - 1]->getNormDoubleAttr(0);
-		m.y = objects[id - 1]->getNormDoubleAttr(1);
+		m.x = objects->at(id - 1)->getNormDoubleAttr(0);
+		m.y = objects->at(id - 1)->getNormDoubleAttr(1);
 		bool br = false;
 		for (auto sortedId  : means) {
-			if (objects[id - 1]->getId() == sortedId.id) {
+			if (objects->at(id - 1)->getId() == sortedId.id) {
 				br = true;
 			}
 		}
@@ -217,14 +189,16 @@ void Constructive::meansClustering()
 		}
 	}
 	
-	for (auto obj : objects) {
+	for (auto obj : *objects) {
 		int clusterID = findNearestMean(obj->getId());
+		obj->clusterId = clusterID;
 		objByCluster[obj->getId() - 1] = clusterID;
 		clusters[clusterID].push_back(obj->getId());
 		solution->addObject(obj->getId(), clusterID);
 	}
 
 	solution->setObjectByCluster(objByCluster);
+	solution->means = &means;
 	
 }
 
@@ -236,9 +210,9 @@ int Constructive::findNearestMean(unsigned int id)
 
 	int index = 0;
 	int count = 0;
-	double minDist = euclideanDistance(objects[id-1], objects[means[0].id]);
+	double minDist = euclideanDistance(objects->at(id - 1), objects->at(means[0].id) );
 	for (auto mean : means) {
-		double dist = euclideanDistance(objects[id - 1], objects[mean.id]);
+		double dist = euclideanDistance( objects->at(id - 1), objects->at(mean.id));
 		if (minDist > dist) {
 			minDist = dist;
 			index = count;
@@ -284,17 +258,17 @@ void Constructive::unionSETs(int idX, int idY)
 	numConvexComponents--;
 	if (elements[xroot - 1].rank < elements[yroot - 1].rank) {
 		elements[xroot - 1].parent = yroot;
-		objects[idX - 1]->clusterId = yroot;
+		objects->at(idX - 1)->clusterId = yroot;
 
 	}
 	else if (elements[xroot - 1].rank > elements[yroot - 1].rank) {
 		elements[yroot - 1].parent = xroot;
-		objects[idY - 1]->clusterId = yroot;
+		objects->at(idY - 1)->clusterId = yroot;
 	}
 	else
 	{
 		elements[yroot - 1].parent = xroot;
-		objects[idY - 1]->clusterId = xroot;
+		objects->at(idY - 1)->clusterId = xroot;
 		elements[xroot - 1].rank++;
 
 	}

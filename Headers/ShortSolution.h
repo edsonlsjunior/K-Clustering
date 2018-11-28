@@ -39,14 +39,14 @@ public:
 
 	void setFileName(string name);
 
-	void setObjects(vector <Object*> objs);
+	void setObjects(vector <Object*> *objs);
 
 	void setClusters(vector <vector<int>> clusters);
 
 	void setLargerEdges(vector <Edge> largerEdges);
 	
 
-	vector <Object*> getObjects();
+	vector <Object*> *getObjects();
 
 	vector <Edge> getEdges();
 
@@ -68,6 +68,10 @@ public:
 
 	double getSilhouette();
 
+	double euclideanDistance(Object * a, Object * b);
+
+	vector <struct mean> *means;
+
 private:
 	vector <int> objectByCluster; // for each object i have the clusters which it belongs
 
@@ -79,15 +83,13 @@ private:
 
 	vector <double> costClusters;
 
-	int id; // solution id
-
 
 	int numObj;
 
 	int numClusters;
 
 
-	vector <Object*> objects;
+	vector <Object*> *objects;
 
 	vector <Edge> edges;
 	vector <Edge> largerEdges;
@@ -99,3 +101,11 @@ private:
 	double Silhouette;
 
 };
+
+struct mean {
+	unsigned int id;
+	double x;
+	double y;
+};
+
+

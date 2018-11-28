@@ -65,6 +65,7 @@ private:
 	static Input *instance;
 
 	vector <Object*> *objects;
+	
 
 	vector <double> simiByMetric;
 

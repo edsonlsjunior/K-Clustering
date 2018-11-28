@@ -11,11 +11,11 @@ using namespace std;
 class Constructive
 {
 public:
-	Constructive(int numVertex, int numClusters, vector <Object*> objects, int type);
+	Constructive(int numVertex, int numClusters, vector <Object*> *objects, int type);
 	void Initialize();
 	~Constructive();
 
-	void buildGraph();
+
 	double euclideanDistance(double xa, double ya, double xb, double yb);
 	double euclideanDistance(Object * a, Object * b);
 
@@ -46,7 +46,7 @@ public:
 private:
 	vector <struct mean> means;
 
-	vector <Object*> objects;
+	vector <Object*> *objects;
 
 	vector <double> clustersCosts;
 	vector <double> finalCosts;
@@ -96,8 +96,3 @@ struct cluster {
 	int idClusterInSolution;
 };
 
-struct mean {
-	unsigned int id;
-	double x;
-	double y;
-};

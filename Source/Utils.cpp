@@ -86,7 +86,7 @@ void Utils::printGraph(ShortSolution *solution)
 
 	vector <double> costClusters;
 	vector <vector<int>> clusters = solution->getClusters();
-	vector <Object*> graph = solution->getObjects();
+	vector <Object*> graph = *solution->getObjects();
 	
 
 	for (size_t i = 0; i < graph.size(); i++) {
@@ -119,7 +119,7 @@ void Utils::ShowSolution(ShortSolution * solution)
 
 	vector <double> costClusters;
 	vector <vector<int>> clusters = solution->getClusters();
-	vector <Object*> graph = solution->getObjects();
+	vector <Object*> graph = *solution->getObjects();
 	costClusters.assign(clusters.size(), 0);
 
 
@@ -154,7 +154,7 @@ void Utils::printEdges(ShortSolution * solution)
 
 	vector <double> costClusters;
 	vector <vector<int>> clusters = solution->getClusters();
-	vector <Object*> graph = solution->getObjects();
+	vector <Object*> graph = *solution->getObjects();
 	vector <Edge> edges = solution->getEdges();
 
 	string color;

@@ -47,7 +47,8 @@ void Input::readObjectInstances()
 	int index;
 	double x, y;
 	int ix, iy;
-	vector <Object*> objects;
+	vector <Object*> *objects = new vector <Object*>;
+	vector <Object> *test = new vector <Object>;
 	vector <double> attrs;
 	int i = 0;
 	f.open(file);
@@ -56,7 +57,10 @@ void Input::readObjectInstances()
 		f >> comma;
 		f >> n;
 		for (int j = 0; j < m; j++)
-			objects.push_back(new Object(j + 1));
+			test->push_back(Object(j + 1));
+		for (int j = 0; j < m; j++)
+			objects->push_back(new Object(j + 1));
+		
 		while (i < m) {
 			f >> index;
 			f >> comma;
@@ -64,15 +68,17 @@ void Input::readObjectInstances()
 				f >> x;
 				f >> comma;
 				f >> y;
-				objects[index - 1]->addNewDoubleOrigAttr(x);
-				objects[index - 1]->addNewDoubleOrigAttr(y);
+				test->at(index - 1).addNewDoubleOrigAttr(x);
+				test->at(index - 1).addNewDoubleOrigAttr(y);
+				objects->at(index - 1)->addNewDoubleOrigAttr(x);
+				objects->at(index - 1)->addNewDoubleOrigAttr(y);
 			}
 			else if (type == 2) {
 				f >> ix;
 				f >> comma;
 				f >> iy;
-				objects[index - 1]->addNewIntOrigAttr(ix);
-				objects[index - 1]->addNewIntOrigAttr(iy);
+				objects->at(index - 1)->addNewIntOrigAttr(ix);
+				objects->at(index - 1)->addNewIntOrigAttr(iy);
 			}
 			i++;
 		}
@@ -82,7 +88,7 @@ void Input::readObjectInstances()
 		cerr << "Couldn't open file!" << endl;
 	}
 	f.close();
-	this->objects = &objects;
+	this->objects = objects;
 }
 
 void Input::normEntry()
@@ -167,7 +173,7 @@ void Input::readNormEntry()
 double Input::getMaxDoubleAttr(int index)
 {
 	
-	double maxAttr = objects[0]->getOrigDoubleAttr(index);
+	double maxAttr = objects->at(0)->getOrigDoubleAttr(index);
 	vector <Object*>::iterator it;
 	for (it = objects->begin(); it != objects->end(); ++it) {
 		if (maxAttr < (*it)->getOrigDoubleAttr(index)) {
@@ -180,7 +186,7 @@ double Input::getMaxDoubleAttr(int index)
 double Input::getMaxNormDoubleAttr(int index)
 {
 	
-	double maxAttr = objects[0]->getNormDoubleAttr(index);
+	double maxAttr = objects->at(0)->getNormDoubleAttr(index);
 	vector <Object*>::iterator it;
 	for (it = objects->begin(); it != objects->end(); ++it) {
 		if (maxAttr < (*it)->getNormDoubleAttr(index)) {
@@ -197,7 +203,7 @@ double Input::getMaxNormDoubleAttr(int index)
 double Input::getMinNormDoubleAttr(int index)
 {
 	
-	double minAttr = objects[0]->getNormDoubleAttr(index);
+	double minAttr = objects->at(0)->getNormDoubleAttr(index);
 	vector <Object*>::iterator it;
 	for (it = objects->begin(); it != objects->end(); ++it) {
 		if (minAttr > (*it)->getNormDoubleAttr(index)) {
@@ -209,7 +215,7 @@ double Input::getMinNormDoubleAttr(int index)
 
 int Input::getMaxIntAttr(int index)
 {
-	int maxAttr = objects[0]->getOrigIntAttr(index);
+	int maxAttr = objects->at(0)->getOrigIntAttr(index);
 	vector <Object*>::iterator it;
 	for (it = objects->begin(); it != objects->end(); ++it) {
 		if (maxAttr < (*it)->getOrigIntAttr(index)) {
@@ -221,7 +227,7 @@ int Input::getMaxIntAttr(int index)
 
 int Input::getMaxNormIntAttr(int index)
 {
-	int maxAttr = objects[0]->getOrigIntAttr(index);
+	int maxAttr = objects->at(0)->getOrigIntAttr(index);
 	vector <Object*>::iterator it;
 	for (it = objects->begin(); it != objects->end(); ++it) {
 		if (maxAttr < (*it)->getNormIntAttr(index)) {
@@ -234,7 +240,7 @@ int Input::getMaxNormIntAttr(int index)
 double Input::getMinDoubleAttr(int index)
 {
 
-	double minAttr = objects[0]->getOrigDoubleAttr(index);
+	double minAttr = objects->at(0)->getOrigDoubleAttr(index);
 	vector <Object*>::iterator it;
 	for (it = objects->begin(); it != objects->end(); ++it) {
 		if (minAttr > (*it)->getOrigDoubleAttr(index)) {
@@ -247,7 +253,7 @@ double Input::getMinDoubleAttr(int index)
 
 int Input::getMinIntAttr(int index)
 {
-	int minAttr = objects[0]->getOrigIntAttr(index);
+	int minAttr = objects->at(0)->getOrigIntAttr(index);
 	vector <Object*>::iterator it;
 	for (it = objects->begin(); it != objects->end(); ++it) {
 		if (minAttr > (*it)->getOrigIntAttr(index)) {
@@ -259,7 +265,7 @@ int Input::getMinIntAttr(int index)
 
 int Input::getMinNormIntAttr(int index)
 {
-	int minAttr = objects[0]->getOrigIntAttr(index);
+	int minAttr = objects->at(0)->getOrigIntAttr(index);
 	vector <Object*>::iterator it;
 	for (it = objects->begin(); it != objects->end(); ++it) {
 		if (minAttr > (*it)->getNormIntAttr(index)) {
@@ -335,12 +341,12 @@ void Input::buildGraph()
 	for (int i = 0; i < numObjs; i++) {
 		for (int j = 0; j < numObjs; j++) {
 			if (i != j) {
-				double distance = euclideanDistance(objects[i], objects[j]);
+				double distance = euclideanDistance(objects->at(i), objects->at(j));
 
 			}
 			else if (i > j) {
-				double distance = euclideanDistance(objects[i], objects[j]);
-				objects[i]->addEdge(objects[i]->getId(), distance, objects[j]->getId());
+				double distance = euclideanDistance(objects->at(i), objects->at(j));
+				objects->at(i)->addEdge(objects->at(i)->getId(), distance, objects->at(j)->getId());
 			}
 
 		}

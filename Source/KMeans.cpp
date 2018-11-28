@@ -8,7 +8,7 @@
 #include <algorithm>
 
 
-KMeans::KMeans(int k,int maxInterations,double maximaX,double maximaY,double minimaX,double minimaY, vector <Object*> objects)
+KMeans::KMeans(int k,int maxInterations,double maximaX,double maximaY,double minimaX,double minimaY, vector <Object*> *objects)
 {
 	this->k = k;
 	this->maxInterations = maxInterations;
@@ -26,6 +26,15 @@ double KMeans::euclideanDistance(Object *a, Object *b)
 
 		dist += pow((a->getNormDoubleAttr(i) - b->getNormDoubleAttr(i)),2);
 	}
+	return sqrt(dist);
+}
+
+double KMeans::euclideanDistance(double xa, double ya, double xb, double yb)
+{
+	double dist = 0.0;
+	int numAttr = 2;
+	dist += pow((xa - xb), 2);
+	dist += pow((ya - yb), 2);
 	return sqrt(dist);
 }
 
@@ -47,13 +56,13 @@ void KMeans::initializeMeans()
 	}
 	int i = 0;
 	vector <Object*> ::iterator it;
-	it = objects.begin();
+	it = objects->begin();
 	// for each object find nearest centroid
 	//Quadratic O(n²)
 
 	for (; i < maxInterations; i++) {
 		//test convergence
-		while (it != objects.end()) {
+		while (it != objects->end()) {
 			int mean = findNearestMean((*it));
 			//clusters[mean].addObject((*it));
 			(*it)->clusterId = mean;
@@ -77,7 +86,47 @@ void KMeans::initializeMeans()
 	
 	
 	
-	
+void KMeans::readSolution(ShortSolution *s) {
+	this->solution = s;
+
+
+}
+
+void KMeans::buildClusters() {
+
+	int i = 0;
+	vector <Object*> ::iterator it;
+	it = objects->begin();
+	// for each object find nearest centroid
+	//Quadratic O(n²)
+	//Aloca cada objeto apra um mean 
+	for (; i < maxInterations; i++) {
+		//test convergence
+		while (it != objects->end()) {
+			int mean = findNearestMean((*it));
+			solution->addObject((*it)->getId(), mean);
+			++it;
+		}
+
+		//update each centroid for each object assign to it in previous step
+		//Quadratic O(n²)
+
+		for (int j = 0; j < k; j++) {
+			double mediaX = 0;
+			double mediaY = 0;
+			//0 and 1 are dimensions
+			mediaX = getNewCentroid(j, 0);
+			mediaY = getNewCentroid(j, 1);
+			solution->means->at(j).x = mediaX;
+			solution->means->at(j).y = mediaY;
+			//means[j].setNormDoubleAttr(mediaX, 0);
+			//means[j].setNormDoubleAttr(mediaX, 1);
+		}
+
+	}
+	solution->calculateSilhouette();
+	cout << "KMeans:" << solution->getSilhouette() << endl;
+}
 
 
 int KMeans::findNearestMean(Object *obj)
@@ -86,9 +135,9 @@ int KMeans::findNearestMean(Object *obj)
 	vector <Object> ::iterator mean;
 	int index=0;
 	int count = 0;
-	double minDist = euclideanDistance(obj, &means[0]);
-	for (mean = means.begin();mean != means.end();++mean) {
-		double dist = euclideanDistance(obj, &*mean);
+	double minDist = numeric_limits<double>::min();
+	for (auto m : *solution->means) {
+		double dist = euclideanDistance(obj->getNormDoubleAttr(0),obj->getNormDoubleAttr(1),m.x,m.y);
 		if (minDist > dist) {
 			minDist = dist;
 			index = count;
@@ -101,6 +150,10 @@ int KMeans::findNearestMean(Object *obj)
 
 KMeans::~KMeans()
 {
+	/*for (auto o : *objects) {
+		delete o;
+	}
+	delete objects;*/
 }
 
 void KMeans::setmaximaX(double value)
@@ -127,21 +180,21 @@ double KMeans::getNewCentroid(int mean,int dimAttr)
 {
 	double media = 0;
 	vector <Object*> ::iterator it;
-	it = objects.begin();
-	while (it != objects.end()) {
+	it = objects->begin();
+	while (it != objects->end()) {
 		if ((*it)->clusterId == mean) {
 			media += (*it)->getNormDoubleAttr(dimAttr);
 		}
 		++it;
 	}
-	return media / objects.size();
+	return media / objects->size();
 }
 
 void KMeans::showInfo()
 {
 	vector <Object*> ::iterator it;
-	it = objects.begin();
-	while (it != objects.end()) {
+	it = objects->begin();
+	while (it != objects->end()) {
 		cout << "Obj " << (*it)->getId() << " Cluster:" << (*it)->clusterId << endl;
 		++it;
 	}
@@ -150,11 +203,11 @@ void KMeans::showInfo()
 
 ShortSolution * KMeans::saveShortSolution()
 {
-	ShortSolution *s = new ShortSolution(objects.size(),k);
+	ShortSolution *s = new ShortSolution(objects->size(),k);
 	vector <Object*> ::iterator it;
-	it = objects.begin();
+	it = objects->begin();
 	int i = 0;
-	while (it != objects.end()) {
+	while (it != objects->end()) {
 		s->addObject((*it)->getId(), (*it)->clusterId);
 		++it;
 		i++;

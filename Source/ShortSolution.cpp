@@ -41,6 +41,11 @@ void ShortSolution::showSolution()
 
 ShortSolution::~ShortSolution()
 {
+	for (auto o : *objects) {
+		delete o;
+	}
+
+	delete objects;
 
 
 }
@@ -53,16 +58,6 @@ void ShortSolution::addObject(int objectId, int clusterId)
 
 }
 
-int ShortSolution::getId()
-{
-	return this->id;
-}
-
-void ShortSolution::setId(int id)
-{
-
-	this->id = id;
-}
 
 
 
@@ -134,7 +129,7 @@ void ShortSolution::setFileName(string name)
 	this->fileName = name;
 }
 
-void ShortSolution::setObjects(vector<Object*> objs)
+void ShortSolution::setObjects(vector<Object*> *objs)
 {
 
 
@@ -155,7 +150,7 @@ void ShortSolution::setLargerEdges(vector<Edge> largerEdges)
 
 
 
-vector<Object*> ShortSolution::getObjects()
+vector<Object*> *ShortSolution::getObjects()
 {
 	return this->objects;
 }
@@ -194,7 +189,7 @@ void ShortSolution::calculateCostClusters()
 void ShortSolution::calculateIntraCosts()
 {
 
-
+/*
 	//Para cada cluster i com k objetos
 	for (int i = 0; i < clusters.size(); i++) {
 		//Para cada objeto j Node cluster i
@@ -205,7 +200,7 @@ void ShortSolution::calculateIntraCosts()
 			for (int k = j; k < clusters[i].size(); k++) {
 				if (j != k) {
 					//cout << "J: " << j << " K " << k << endl;
-					double a = objects[j]->getDistance(k - 1);
+					double a = objects->at(j)->getDistance(k - 1);
 					soma += a;
 				}
 			}
@@ -214,7 +209,7 @@ void ShortSolution::calculateIntraCosts()
 
 		//cout << costClusters[i] << endl;
 	}
-	
+	*/
 }
 
 void ShortSolution::newCalculateIntraCosts()
@@ -276,13 +271,13 @@ void ShortSolution::calculateSilhouette() {
 
 			double sumDists = 0.0;
 			for (int i = 0; i < clusters[clusterObj].size(); i++) {
-				sumDists += objects[clusters[clusterObj][i] - 1]->getDistance(n);
+				sumDists = euclideanDistance(objects->at(clusters[clusterObj][i] - 1), objects->at(n-1)); 
 			}
 			a = sumDists * m;
 			//cout << "dist" << sumDists << endl;
 		}
 
-		//	cout << "a" << endl;
+		
 
 		//dissimilaridade2
 		double b;
@@ -291,7 +286,7 @@ void ShortSolution::calculateSilhouette() {
 		for (int i = 1; i <= numObj; i++) {
 			double d = 0;
 			if (n != i) {
-				d = objects[n - 1]->getDistance(i);
+				d = euclideanDistance(objects->at(n-1), objects->at(i-1));
 				if (d < minDist && objectByCluster[i - 1] != clusterObj) {
 					minDist = d;
 					closestCluster = objectByCluster[i - 1];
@@ -305,14 +300,24 @@ void ShortSolution::calculateSilhouette() {
 			b = 0;
 		else {
 			double m = ((float)1 / (float)clusters[closestCluster].size());
+
 			double sumDists = 0.0;
+			
+			
 			for (int i = 0; i < clusters[closestCluster].size(); i++) {
-				if (i != (n - 1))
-					sumDists += objects[clusters[closestCluster][i] - 1]->getDistance(n);
+
+				if (i != n) {
+				
+					
+					sumDists = euclideanDistance(objects->at(clusters[closestCluster][i] - 1), objects->at(n - 1));
+				}
+	
 			}
+			
+			
 			b = sumDists * m;
 		}
-		//	cout << "b 2 " << endl;
+			//cout << "b 2 " << endl;
 
 
 		//	cout << "b 3 " << endl;
@@ -320,7 +325,7 @@ void ShortSolution::calculateSilhouette() {
 
 		//cout << a << endl;
 		//cout << b << endl;
-		//checar se max(a,b) 
+		//cout << "checar se max(a,b)" << endl;
 		if (a > b)
 			max = a;
 		else
@@ -337,7 +342,8 @@ void ShortSolution::calculateSilhouette() {
 		//cout << "max" << endl;
 
 		silhouettes.push_back(s);
-		//cout << silhouettes[n-1] << endl;
+
+	//	cout << silhouettes[n-1] << endl;
 	}
 
 	double sum = 0.0;
@@ -353,4 +359,14 @@ void ShortSolution::calculateSilhouette() {
 double ShortSolution::getSilhouette()
 {
 	return this->Silhouette;
+}
+
+double ShortSolution::euclideanDistance(Object *a, Object *b)
+{
+	double dist = 0.0;
+	int numAttr = 2;
+	for (int i = 0; i<numAttr; i++)
+		dist += pow((a->getNormDoubleAttr(i) - b->getNormDoubleAttr(i)), 2);
+
+	return sqrt(dist);
 }
