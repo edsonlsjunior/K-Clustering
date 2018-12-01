@@ -173,7 +173,7 @@ void Constructive::meansClustering()
 	int count = 0;
 	 mean m;
 	while( count < numClusters ) {
-		unsigned int id = rand() % numObjs;
+		unsigned int id = rand() % numObjs + 1;
 		m.id = id;
 		m.x = objects->at(id - 1)->getNormDoubleAttr(0);
 		m.y = objects->at(id - 1)->getNormDoubleAttr(1);

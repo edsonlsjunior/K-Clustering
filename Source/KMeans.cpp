@@ -95,9 +95,13 @@ void KMeans::readSolution(ShortSolution *s) {
 void KMeans::buildClusters() {
 
 	int i = 0;
+	int numInterations = 50;
 	vector <Object*> ::iterator it;
 	it = objects->begin();
+	solution->calculateSilhouette();
+	cout << "Constructive: " << solution->getSilhouette() << endl;
 	ShortSolution *newSol = new ShortSolution(solution->getNumObjs(), solution->getNumClusters());
+	solution->copySolution(newSol);
 	newSol->means = solution->means;
 	// for each object find nearest centroid
 	//Quadratic O(n²)
@@ -106,8 +110,8 @@ void KMeans::buildClusters() {
 		//test convergence
 		while (it != objects->end()) {
 			int mean = findNearestMean((*it));
-			//newSol.addObject((*it)->getId(), mean);
-			solution->addObject((*it)->getId(), mean);
+			newSol->addObject((*it)->getId(), mean);
+			//solution->addObject((*it)->getId(), mean);
 			++it;
 		}
 
@@ -120,22 +124,26 @@ void KMeans::buildClusters() {
 			//0 and 1 are dimensions
 			mediaX = getNewCentroid(j, 0);
 			mediaY = getNewCentroid(j, 1);
-			newSol.means->at(j).x = mediaX;
+			newSol->means->at(j).x = mediaX;
 			
-			newSol.means->at(j).y = mediaY;
+			newSol->means->at(j).y = mediaY;
 			//means[j].setNormDoubleAttr(mediaX, 0);
 			//means[j].setNormDoubleAttr(mediaX, 1);
 		}
+	
+	}
+	newSol->calculateSilhouette();
+
+	int count = 0;
+	if (newSol->getSilhouette() > solution->getSilhouette()) {
+		newSol->copySolution(solution);
+		cout << "K Means Melhorou Sol" << endl;
+		count = 0;
+		cout << "KMeans:" << newSol->getSilhouette() << endl;
 
 	}
-	newSol.calculateSilhouette();
-	solution->calculateSilhouette();
-	if (newSol.getSilhouette() > solution->getSilhouette()) {
-		solution = &newSol;
-		cout << "trocou" << endl;
-	}
-		
-	cout << "KMeans:" << newSol.getSilhouette() << endl;
+
+	
 }
 
 
@@ -145,7 +153,7 @@ int KMeans::findNearestMean(Object *obj)
 	vector <Object> ::iterator mean;
 	int index=0;
 	int count = 0;
-	double minDist = numeric_limits<double>::min();
+	double minDist = numeric_limits<double>::max();
 	for (auto m : *solution->means) {
 		double dist = euclideanDistance(obj->getNormDoubleAttr(0),obj->getNormDoubleAttr(1),m.x,m.y);
 		if (minDist > dist) {

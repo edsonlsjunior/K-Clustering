@@ -370,3 +370,48 @@ double ShortSolution::euclideanDistance(Object *a, Object *b)
 
 	return sqrt(dist);
 }
+
+void ShortSolution::copySolution(ShortSolution *newSol) {
+	/*vector <struct mean> *means;
+
+private:
+	vector <int> objectByCluster; // for each object i have the clusters which it belongs
+
+	vector <vector<int>> clusters; //for each cluster i have a subgroup of objects in it
+
+	vector <double> intraCosts;
+
+	vector <double> externalCosts;
+
+	vector <double> costClusters;
+
+
+	int numObj;
+
+	int numClusters;
+
+
+	vector <Object*> *objects;
+
+	vector <Edge> edges;
+	vector <Edge> largerEdges;
+
+	string fileName;
+	
+	double sumCosts; //cost of solution
+
+	double Silhouette;*/
+
+	newSol->Silhouette = Silhouette;
+	newSol->sumCosts = sumCosts;
+	newSol->largerEdges = largerEdges;
+	newSol->objects = objects;
+	newSol->numObj = numObj;
+	newSol->numClusters = numClusters;
+	newSol->costClusters = costClusters;
+	newSol->externalCosts = externalCosts;
+	newSol->intraCosts = intraCosts;
+	newSol->clusters = clusters;
+	newSol->objectByCluster = objectByCluster;
+	newSol->means = means;
+}

@@ -70,6 +70,8 @@ public:
 
 	double euclideanDistance(Object * a, Object * b);
 
+	void copySolution(ShortSolution * newSol);
+
 	vector <struct mean> *means;
 
 private:
