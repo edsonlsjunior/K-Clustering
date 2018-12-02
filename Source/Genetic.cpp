@@ -26,22 +26,22 @@ pair <struct mean, struct mean> Genetic::crossMeans(struct mean m1, struct mean 
 	v.first = m2.x - m1.x;
 	v.second = m2.y - m1.y;
 	struct mean newM1;
-	newM1.x = m1.x += v.first;
-	newM1.y = m1.y += v.second;
+	newM1.x = m1.x + 0.25*(v.first);
+	newM1.y = m1.y + 0.25*(v.second);
 	newMeans.first = newM1;
 
 	v.first = m1.x - m2.x;
 	v.second = m1.y - m2.y;
 	struct mean newM2;
-	newM2.x = m2.x += v.first;
-	newM2.y = m2.y += v.second;
+	newM2.x = m2.x + 0.25*(v.first);
+	newM2.y = m2.y + 0.25*(v.second);
 	newMeans.second = newM2;
 
 	return newMeans;
 
 }
 
-void Genetic::crossover(ShortSolution * sol1, ShortSolution * sol2, ShortSolution * newSol)
+void Genetic::crossover(ShortSolution * sol1, ShortSolution * sol2, ShortSolution * newSol, ShortSolution * newSol2)
 {
 	/*The combining crossover combines the two solutions. It
 builds the new offsprings centre by centre. For each centre
@@ -55,8 +55,8 @@ on the line joining the two parent centres.
 	vector <struct mean> *m2 = sol2->means;
 	vector <pair <int, int>> matches = matchMeansSolutions(sol1, sol2, newMeans);
 	for (auto match : matches ) {
-		pair <struct mean, struct mean> pairMeans = crossMeans(sol1->means->at(matches.front), sol2->means->at(matches.back));
-		
+		pair <struct mean, struct mean> pairMeans = crossMeans(sol1->means->at(match.first ), sol2->means->at(match.second));
+		sol1->means->at(match.first) = pairMeans.first;
 	}
 	
 }
@@ -81,10 +81,12 @@ Genetic::Genetic(vector<ShortSolution*>* sols, int maxIterations)
 		for (int i = 0; i < numOffspring; i++) {
 
 			ShortSolution *s = new ShortSolution();
+			ShortSolution *s2 = new ShortSolution();
 			rand1 = rand() % solutions->size();
 			rand2 = rand() % solutions->size();
-			crossover(solutions->at(rand1), solutions->at(rand2), s);
+			crossover(solutions->at(rand1), solutions->at(rand2), s, s2);
 			newPopulation->push_back(s);
+			newPopulation->push_back(s2);
 			
 		}
 

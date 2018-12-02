@@ -192,7 +192,6 @@ void Constructive::meansClustering()
 	for (auto obj : *objects) {
 		int clusterID = findNearestMean(obj->getId());
 		objByCluster[obj->getId() - 1] = clusterID;
-		clusters[clusterID].push_back(obj->getId());
 		solution->addObject(obj->getId(), clusterID);
 	}
 

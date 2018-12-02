@@ -375,36 +375,18 @@ double ShortSolution::euclideanDistance(Object *a, Object *b)
 	return sqrt(dist);
 }
 
+double ShortSolution::euclideanDistance(double xa, double ya, double xb, double yb)
+{
+	double dist = 0.0;
+	int numAttr = 2;
+	dist += pow((xa - xb), 2);
+	dist += pow((ya - yb), 2);
+	return sqrt(dist);
+}
+
+
 void ShortSolution::copySolution(ShortSolution *newSol) {
-	/*vector <struct mean> *means;
-
-private:
-	vector <int> objectByCluster; // for each object i have the clusters which it belongs
-
-	vector <vector<int>> clusters; //for each cluster i have a subgroup of objects in it
-
-	vector <double> intraCosts;
-
-	vector <double> externalCosts;
-
-	vector <double> costClusters;
-
-
-	int numObj;
-
-	int numClusters;
-
-
-	vector <Object*> *objects;
-
-	vector <Edge> edges;
-	vector <Edge> largerEdges;
-
-	string fileName;
 	
-	double sumCosts; //cost of solution
-
-	double Silhouette;*/
 
 	newSol->Silhouette = Silhouette;
 	newSol->sumCosts = sumCosts;
@@ -418,4 +400,66 @@ private:
 	newSol->clusters = clusters;
 	newSol->objectByCluster = objectByCluster;
 	newSol->means = means;
+}
+
+void ShortSolution::updateClusters()
+{
+
+	vector <Object*> ::iterator it;
+	it = objects->begin();
+		while (it != objects->end()) {
+			int mean = findNearestMean((*it));
+			addObject((*it)->getId(), mean);
+			//solution->addObject((*it)->getId(), mean);
+			++it;
+		}
+}
+
+int ShortSolution::findNearestMean(Object *obj)
+	{
+		// O(n)
+		int index = 0;
+		int count = 0;
+		double minDist = numeric_limits<double>::max();
+		for (auto m : *means) {
+			double dist = euclideanDistance(obj->getNormDoubleAttr(0), obj->getNormDoubleAttr(1), m.x, m.y);
+			if (minDist > dist) {
+				minDist = dist;
+				index = count;
+			}
+			count++;
+		}
+		return index;
+	}
+
+
+void ShortSolution::updateObjectCluster(int objectId, int clusterId) {
+	
+
+	objectByCluster[objectId - 1] = clusterId;
+
+
+
+
+
+		
+	
+
+}
+
+void ShortSolution::updateAllClusters() {
+
+
+	vector <int> a;
+	clusters.clear();
+	clusters.assign(numClusters, a);
+	for (size_t i = 0; i < clusters.size(); i++) {
+		clusters[i].reserve( numObj );
+	}
+	int count = 1;
+	for (auto o : objectByCluster) {
+		addObject(count, o);
+		count++;
+	}
+
 }

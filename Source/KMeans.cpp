@@ -44,52 +44,6 @@ double KMeans::euclideanDistance(double xa, double ya, double xb, double yb)
 	return sqrt(dist);
 }
 
-void KMeans::initializeMeans()
-{
-	//place centroid at random locations
-	std::mt19937 mt(42);
-	for (int i = 0; i < k; i++) {
-
-		means.push_back(i);
-		//uniform_real_distribution<float> linear_x(maximaX, minimaX);
-		//uniform_real_distribution<float> linear_y(maximaY, minimaY);
-		uniform_real_distribution<float> linear_x(0, 1);
-		uniform_real_distribution<float> linear_y(0, 1);
-		means[i].addNewDoubleOrigAttr(linear_x(mt));
-		means[i].addNewDoubleOrigAttr(linear_y(mt));
-		means[i].addNewDoubleNormAttr(linear_x(mt));
-		means[i].addNewDoubleNormAttr(linear_y(mt));
-	}
-	int i = 0;
-	vector <Object*> ::iterator it;
-	it = objects->begin();
-	// for each object find nearest centroid
-	//Quadratic O(n²)
-
-	for (; i < maxInterations; i++) {
-		//test convergence
-		while (it != objects->end()) {
-			int mean = findNearestMean((*it));
-			//clusters[mean].addObject((*it));
-			(*it)->clusterId = mean;
-			++it;
-		}
-		//update each centroid for each object assign to it in previous step
-		//Quadratic O(n²)
-	
-		for (int j = 0; j < k; j++) {
-			double mediaX = 0;
-			double mediaY = 0;
-			//0 and 1 are dimensions
-			mediaX = getNewCentroid(j,0);
-			mediaY = getNewCentroid(j,1);
-			means[j].setNormDoubleAttr(mediaX, 0);
-			means[j].setNormDoubleAttr(mediaX, 1);
-		}
-		
-	}
-}
-	
 	
 	
 void KMeans::readSolution(ShortSolution *s) {
@@ -114,25 +68,52 @@ void KMeans::buildClusters() {
 	//Aloca cada objeto apra um mean 
 	for (; i < maxInterations; i++) {
 		//test convergence
-		while (it != objects->end()) {
-			int mean = findNearestMean((*it));
-			newSol->addObject((*it)->getId(), mean);
-			//solution->addObject((*it)->getId(), mean);
-			++it;
+		if (i != 0) {
+			while (it != objects->end()) {
+				int mean = findNearestMean((*it));
+				newSol->updateObjectCluster((*it)->getId(), mean);
+				//newSol->addObject((*it)->getId(), mean);
+				//solution->addObject((*it)->getId(), mean);
+				++it;
+			}
 		}
-
+		newSol->updateAllClusters();
 		//update each centroid for each object assign to it in previous step
 		//Quadratic O(n²)
 
 		for (int j = 0; j < k; j++) {
 			double mediaX = 0;
 			double mediaY = 0;
+			int count = 0;
+			double media=0;
+			vector <Object*> ::iterator it;
+			vector <int> objByCluster = newSol->getObjectByClusters();
+
+			it = objects->begin();
 			//0 and 1 are dimensions
-			mediaX = getNewCentroid(j, 0);
-			mediaY = getNewCentroid(j, 1);
+			while (it != objects->end()) {
+				if (objByCluster[count] == j) {
+					media += (*it)->getNormDoubleAttr(0);
+				}
+				++it;
+			}
+			mediaX = media / objects->size();
 			newSol->means->at(j).x = mediaX;
+
+			media = 0;
+			it = objects->begin();
+			//0 and 1 are dimensions
+			while (it != objects->end()) {
+				if (objByCluster[count] == j) {
+					media += (*it)->getNormDoubleAttr(1);
+				}
+				++it;
+			}
+			mediaY = media / objects->size();
+
 			
-			newSol->means->at(j).y = mediaY;
+			
+			newSol->means->at(j).y = mediaY; 
 			//means[j].setNormDoubleAttr(mediaX, 0);
 			//means[j].setNormDoubleAttr(mediaX, 1);
 		}
@@ -156,7 +137,6 @@ void KMeans::buildClusters() {
 int KMeans::findNearestMean(Object *obj)
 {
 	// O(n)
-	vector <Object> ::iterator mean;
 	int index=0;
 	int count = 0;
 	double minDist = numeric_limits<double>::max();
@@ -205,6 +185,7 @@ double KMeans::getNewCentroid(int mean,int dimAttr)
 	double media = 0;
 	vector <Object*> ::iterator it;
 	it = objects->begin();
+
 	while (it != objects->end()) {
 		if ((*it)->clusterId == mean) {
 			media += (*it)->getNormDoubleAttr(dimAttr);

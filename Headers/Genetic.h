@@ -14,7 +14,7 @@ class Genetic
 private:
 	vector <pair <int, int>> matchMeansSolutions(ShortSolution *sol1, ShortSolution *sol2, vector <struct mean> *newMeans);
 	pair<struct mean, struct mean> crossMeans(mean m1, mean m2);
-	void crossover(ShortSolution *sol1, ShortSolution *sol2, ShortSolution *newSol);
+	void crossover(ShortSolution * sol1, ShortSolution * sol2, ShortSolution * newSol, ShortSolution * newSol2);
 	void mutation(ShortSolution *sol1);
 	vector <ShortSolution*> *solutions;
 	vector <ShortSolution*> *newSols;

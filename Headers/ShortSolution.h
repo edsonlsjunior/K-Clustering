@@ -71,9 +71,21 @@ public:
 
 	double euclideanDistance(Object * a, Object * b);
 
+	double euclideanDistance(double xa, double ya, double xb, double yb);
+
 	void copySolution(ShortSolution * newSol);
 
+	int findNearestMean(Object * obj);
+
+	void updateObjectCluster(int objectId, int clusterId);
+
+	void updateAllClusters();
+
 	vector <struct mean> *means;
+
+
+	void updateClusters();
+
 
 private:
 	vector <int> objectByCluster; // for each object i have the clusters which it belongs
