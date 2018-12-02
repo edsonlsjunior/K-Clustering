@@ -16,6 +16,7 @@ class KMeans
 {
 public:
 	KMeans(int k, int maxInterations, double maximaX,double maximaY, double minimaX, double minimaY, vector <Object*> *objects);
+	KMeans(int k, int maxInterations, vector<Object*>* objects);
 	double euclideanDistance(Object *a, Object *b);
 	double euclideanDistance(double xa, double ya, double xb, double yb);
 	void initializeMeans();

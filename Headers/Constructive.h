@@ -12,6 +12,7 @@ class Constructive
 {
 public:
 	Constructive(int numVertex, int numClusters, vector <Object*> *objects, int type);
+	Constructive(int numVertex, int numClusters, vector<Object*>* objects, int type, int seed);
 	void Initialize();
 	~Constructive();
 
@@ -76,6 +77,8 @@ private:
 	ShortSolution *solution;
 
 	vector <Object*> graph;
+
+	int seed;
 
 	int type;
 

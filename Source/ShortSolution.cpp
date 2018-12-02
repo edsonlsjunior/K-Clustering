@@ -2,6 +2,10 @@
 
 
 
+ShortSolution::ShortSolution()
+{
+}
+
 ShortSolution::ShortSolution(int numObj, int numClusters)
 {
 	this->numObj = numObj;

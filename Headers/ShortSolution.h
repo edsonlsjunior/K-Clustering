@@ -9,6 +9,7 @@ using namespace std;
 class ShortSolution
 {
 public:
+	ShortSolution();
 	ShortSolution(int numObj, int numClusters);
 	void showSolution();
 	~ShortSolution();

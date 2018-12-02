@@ -19,6 +19,12 @@ KMeans::KMeans(int k,int maxInterations,double maximaX,double maximaY,double min
 	this->objects = objects;
 }
 
+KMeans::KMeans(int k, int maxInterations, vector <Object*> *objects) {
+	this->k = k;
+	this->maxInterations = maxInterations;
+	this->objects = objects;
+}
+
 double KMeans::euclideanDistance(Object *a, Object *b)
 {
 	double dist=0.0;
@@ -213,7 +219,7 @@ void KMeans::showInfo()
 	vector <Object*> ::iterator it;
 	it = objects->begin();
 	while (it != objects->end()) {
-		cout << "Obj " << (*it)->getId() << " Cluster:" << (*it)->clusterId << endl;
+		//cout << "Obj " << (*it)->getId() << " Cluster:" << (*it)->clusterId << endl;
 		++it;
 	}
 
@@ -226,7 +232,7 @@ ShortSolution * KMeans::saveShortSolution()
 	it = objects->begin();
 	int i = 0;
 	while (it != objects->end()) {
-		s->addObject((*it)->getId(), (*it)->clusterId);
+	//	s->addObject((*it)->getId(), (*it)->id ;
 		++it;
 		i++;
 	}

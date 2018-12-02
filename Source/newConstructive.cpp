@@ -3,12 +3,13 @@
 #include <list>
 
 
-Constructive::Constructive(int numVertex, int numClusters, vector <Object*> *objects, int type)
+Constructive::Constructive(int numVertex, int numClusters, vector <Object*> *objects, int type, int seed)
 {
 	solution = new ShortSolution(numVertex, numClusters);
 	this->objects = objects;
 	this->numObjs = numVertex;
 	this->numClusters = numClusters;
+	seed = 13;
 
 }
 
@@ -108,7 +109,6 @@ void Constructive::randomMSTClustering()
 	vector <int> clusterId;
 	Initialize();
 	solution->setEdges(candidatesEdges);
-	srand(time(NULL));
 	numConvexComponents = objects->size();
 	int numVertex = objects->size();
 	int numEdges = candidatesEdges.size();
@@ -191,7 +191,6 @@ void Constructive::meansClustering()
 	
 	for (auto obj : *objects) {
 		int clusterID = findNearestMean(obj->getId());
-		obj->clusterId = clusterID;
 		objByCluster[obj->getId() - 1] = clusterID;
 		clusters[clusterID].push_back(obj->getId());
 		solution->addObject(obj->getId(), clusterID);
@@ -210,9 +209,9 @@ int Constructive::findNearestMean(unsigned int id)
 
 	int index = 0;
 	int count = 0;
-	double minDist = euclideanDistance(objects->at(id - 1), objects->at(means[0].id) );
+	double minDist = euclideanDistance(objects->at(id - 1), objects->at(means[0].id - 1) );
 	for (auto mean : means) {
-		double dist = euclideanDistance( objects->at(id - 1), objects->at(mean.id));
+		double dist = euclideanDistance( objects->at(id - 1), objects->at(mean.id - 1 ));
 		if (minDist > dist) {
 			minDist = dist;
 			index = count;
@@ -258,17 +257,17 @@ void Constructive::unionSETs(int idX, int idY)
 	numConvexComponents--;
 	if (elements[xroot - 1].rank < elements[yroot - 1].rank) {
 		elements[xroot - 1].parent = yroot;
-		objects->at(idX - 1)->clusterId = yroot;
+		
 
 	}
 	else if (elements[xroot - 1].rank > elements[yroot - 1].rank) {
 		elements[yroot - 1].parent = xroot;
-		objects->at(idY - 1)->clusterId = yroot;
+		
 	}
 	else
 	{
 		elements[yroot - 1].parent = xroot;
-		objects->at(idY - 1)->clusterId = xroot;
+		
 		elements[xroot - 1].rank++;
 
 	}
