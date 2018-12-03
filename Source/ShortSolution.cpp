@@ -386,8 +386,6 @@ double ShortSolution::euclideanDistance(double xa, double ya, double xb, double 
 
 
 void ShortSolution::copySolution(ShortSolution *newSol) {
-	
-
 	newSol->Silhouette = Silhouette;
 	newSol->sumCosts = sumCosts;
 	newSol->largerEdges = largerEdges;
@@ -409,10 +407,12 @@ void ShortSolution::updateClusters()
 	it = objects->begin();
 		while (it != objects->end()) {
 			int mean = findNearestMean((*it));
-			addObject((*it)->getId(), mean);
+			updateObjectCluster((*it)->getId(), mean);
 			//solution->addObject((*it)->getId(), mean);
 			++it;
 		}
+
+		updateAllClusters();
 }
 
 int ShortSolution::findNearestMean(Object *obj)
@@ -437,14 +437,7 @@ void ShortSolution::updateObjectCluster(int objectId, int clusterId) {
 	
 
 	objectByCluster[objectId - 1] = clusterId;
-
-
-
-
-
-		
 	
-
 }
 
 void ShortSolution::updateAllClusters() {
@@ -461,5 +454,22 @@ void ShortSolution::updateAllClusters() {
 		addObject(count, o);
 		count++;
 	}
+
+}
+
+bool ShortSolution::checkViability() {
+
+	vector <int> aux;
+	aux.assign(numClusters, 0);
+	for (auto o : objectByCluster) {
+		aux[o]++;
+	}
+
+	for (auto a : aux) {
+		if (a == 0)
+			return false;
+	}
+
+	return true;
 
 }

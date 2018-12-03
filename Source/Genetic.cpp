@@ -41,7 +41,7 @@ pair <struct mean, struct mean> Genetic::crossMeans(struct mean m1, struct mean 
 
 }
 
-void Genetic::crossover(ShortSolution * sol1, ShortSolution * sol2, ShortSolution * newSol, ShortSolution * newSol2)
+void Genetic::crossover(ShortSolution * sol1, ShortSolution * sol2)
 {
 	/*The combining crossover combines the two solutions. It
 builds the new offsprings centre by centre. For each centre
@@ -57,70 +57,130 @@ on the line joining the two parent centres.
 	for (auto match : matches ) {
 		pair <struct mean, struct mean> pairMeans = crossMeans(sol1->means->at(match.first ), sol2->means->at(match.second));
 		sol1->means->at(match.first) = pairMeans.first;
+		sol2->means->at(match.second) = pairMeans.second;
 	}
+	sol1->updateClusters();
+	sol2->updateClusters();
 	
 }
 
 void Genetic::mutation(ShortSolution * sol1)
 {
 
-
+	/*sol1->calculateSilhouette();
+	cout << sol1->getSilhouette() << endl; */
+	vector <struct mean> *m1 = sol1->means;
+	vector <vector<int>> clusters;
+	double x, y;
+	int rand1 = rand() % m1->size();
+	clusters = sol1->getClusters();
+	int id = rand() % clusters[rand1].size();
+	id = clusters[rand1][id];
+	vector <Object*> *objs = sol1->getObjects();
+	m1->at(rand1).x = objs->at(id - 1)->getNormDoubleAttr(0);
+	m1->at(rand1).y = objs->at(id - 1)->getNormDoubleAttr(0);
+	sol1->updateClusters();
+	/*
+	sol1->calculateSilhouette();
+	cout << sol1->getSilhouette() << endl;*/
 
 }
 
-Genetic::Genetic(vector<ShortSolution*>* sols, int maxIterations)
+Genetic::Genetic(vector<ShortSolution*>* sols, int maxIterations, vector <ShortSolution*> *newPopulation)
 {
-	int numOffspring = 20;
+	int numOffspring = 12;
 	solutions = sols;
-	vector <ShortSolution*> *newPopulation = new vector <ShortSolution*>;
 	this->maxInterations = maxIterations;
 	int count = 0;
-	int rand1, rand2;
+	int rand1, rand2=0;
 	while (count < maxInterations) {
 
 		for (int i = 0; i < numOffspring; i++) {
-
 			ShortSolution *s = new ShortSolution();
 			ShortSolution *s2 = new ShortSolution();
 			rand1 = rand() % solutions->size();
-			rand2 = rand() % solutions->size();
-			crossover(solutions->at(rand1), solutions->at(rand2), s, s2);
-			newPopulation->push_back(s);
-			newPopulation->push_back(s2);
+			while(rand1 == rand2)
+				rand2 = rand() % solutions->size();
+
+			crossover(solutions->at(rand1), solutions->at(rand2));
+		
+
+			if(solutions->at(rand1)->checkViability())
+				newPopulation->push_back(solutions->at(rand1));
+
+			if (solutions->at(rand2)->checkViability())
+				newPopulation->push_back(solutions->at(rand2));
+	
 			
 		}
 
-		for (auto p : *newPopulation) {
+		vector <ShortSolution*>::iterator it;
+		for (it = newPopulation->begin(); it != newPopulation->end(); ) {
+			if ((*it)->checkViability()) {
+				(*it)->calculateSilhouette();
+				//cout << (*it)->getSilhouette() << " " << (*it)->checkViability() << endl;
 
-			//mutation(p);
-
-
-			//refine(p);
-
-
-		}
-
-		for (auto p : *newPopulation) {
-
-		//	p->calculateSilhouette();
-		//	cout << p->getSilhouette() << endl;
-
+				it++;
+			}
+			else {
+				it = newPopulation->erase(it);
+			}
 
 		}
 
+		solutions->clear();
+		for (auto p : *newPopulation) {
+			if (p->checkViability()) {
+				mutation(p);
+				KMeans *alg = new KMeans(p->getNumClusters(), 3, p->getObjects());
+				alg->readSolution(p);
+				alg->buildClusters();
+			}
+
+			if (p->checkViability()) {
+				ShortSolution *n = new ShortSolution();
+				p->copySolution(n);
+				solutions->push_back(n);
+			}
+		}
 
 
+
+
+		std::sort(solutions->begin(), solutions->end(), [](const ShortSolution* lhs, const ShortSolution* rhs)
+		{
+			return lhs->Silhouette > rhs->Silhouette;
+		});
+		
+		unsigned int tam = solutions->size();
+		tam = tam * 0.5;
+
+		solutions->erase(solutions->begin() + tam, solutions->end());
+
+
+
+
+
+	
+		
+		cout << count << endl;
+	count++;
+	
 
 
 	}
 
+
 	
 
+	newPopulation = solutions;
+
+	
 }
 
-Genetic::Genetic(vector<ShortSolution*>* sols, double  timeLimit)
+Genetic::Genetic(vector<ShortSolution>* sols, double  timeLimit)
 {
-	solutions = sols;
+//	solutions = sols;
 	this->timeLimit = timeLimit;
 
 }
@@ -157,9 +217,10 @@ double Genetic::euclideanDistance(double xa, double ya, double xb, double yb)
 }
 
 void Genetic::refine(ShortSolution *newSol) {
-	KMeans *alg = new KMeans(newSol->getNumClusters(), 5, newSol->getObjects());
+	KMeans *alg = new KMeans(newSol->getNumClusters(), 3, newSol->getObjects());
 	alg->readSolution(newSol);
 	alg->buildClusters();
+	delete alg;
 
 }
 

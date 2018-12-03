@@ -81,16 +81,30 @@ public:
 
 	void updateAllClusters();
 
+	bool checkViability();
+
 	vector <struct mean> *means;
 
 
 	void updateClusters();
 
+	bool operator < (ShortSolution cmp1)
+	{
+		//Do your own calculations here
+		if (cmp1.getSilhouette() < getSilhouette() )
+		{
+			return true;
+		}
 
+		return false;
+	}
+	vector <vector<int>> clusters;
+
+	double Silhouette;
 private:
 	vector <int> objectByCluster; // for each object i have the clusters which it belongs
 
-	vector <vector<int>> clusters; //for each cluster i have a subgroup of objects in it
+	 //for each cluster i have a subgroup of objects in it
 
 	vector <double> intraCosts;
 
@@ -113,7 +127,7 @@ private:
 	
 	double sumCosts; //cost of solution
 
-	double Silhouette;
+	
 
 };
 

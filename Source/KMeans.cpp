@@ -55,14 +55,11 @@ void KMeans::readSolution(ShortSolution *s) {
 void KMeans::buildClusters() {
 
 	int i = 0;
-	int numInterations = 50;
 	vector <Object*> ::iterator it;
 	it = objects->begin();
-	solution->calculateSilhouette();
-	cout << "Constructive: " << solution->getSilhouette() << endl;
+	//solution->calculateSilhouette();
 	ShortSolution *newSol = new ShortSolution(solution->getNumObjs(), solution->getNumClusters());
 	solution->copySolution(newSol);
-	newSol->means = solution->means;
 	// for each object find nearest centroid
 	//Quadratic O(n²)
 	//Aloca cada objeto apra um mean 
@@ -72,8 +69,6 @@ void KMeans::buildClusters() {
 			while (it != objects->end()) {
 				int mean = findNearestMean((*it));
 				newSol->updateObjectCluster((*it)->getId(), mean);
-				//newSol->addObject((*it)->getId(), mean);
-				//solution->addObject((*it)->getId(), mean);
 				++it;
 			}
 		}
@@ -92,41 +87,41 @@ void KMeans::buildClusters() {
 			it = objects->begin();
 			//0 and 1 are dimensions
 			while (it != objects->end()) {
-				if (objByCluster[count] == j) {
+				
+				if (objByCluster[(*it)->getId()-1 ] == j) {
 					media += (*it)->getNormDoubleAttr(0);
 				}
 				++it;
 			}
-			mediaX = media / objects->size();
+			mediaX = media / newSol->clusters[j].size();
+
 			newSol->means->at(j).x = mediaX;
 
 			media = 0;
 			it = objects->begin();
 			//0 and 1 are dimensions
 			while (it != objects->end()) {
-				if (objByCluster[count] == j) {
+				if (objByCluster[(*it)->getId() - 1] == j) {
 					media += (*it)->getNormDoubleAttr(1);
 				}
 				++it;
 			}
-			mediaY = media / objects->size();
+			mediaY = media / newSol->clusters[j].size();
 
 			
 			
 			newSol->means->at(j).y = mediaY; 
-			//means[j].setNormDoubleAttr(mediaX, 0);
-			//means[j].setNormDoubleAttr(mediaX, 1);
+
 		}
 	
 	}
 	newSol->calculateSilhouette();
-
 	int count = 0;
-	if (newSol->getSilhouette() > solution->getSilhouette()) {
+	if (newSol->getSilhouette() > solution->getSilhouette() && newSol->checkViability()) {
 		newSol->copySolution(solution);
-		cout << "K Means Melhorou Sol" << endl;
+		//cout << "K Means Melhorou Sol" << endl;
 		count = 0;
-		cout << "KMeans:" << newSol->getSilhouette() << endl;
+		//cout << "KMeans:" << newSol->getSilhouette() << endl;
 
 	}
 

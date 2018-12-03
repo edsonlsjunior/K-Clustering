@@ -7,6 +7,7 @@
 #include <cstdlib> 
 #include <limits>
 #include <utility>
+#include <algorithm>
 
 
 class Genetic
@@ -14,15 +15,17 @@ class Genetic
 private:
 	vector <pair <int, int>> matchMeansSolutions(ShortSolution *sol1, ShortSolution *sol2, vector <struct mean> *newMeans);
 	pair<struct mean, struct mean> crossMeans(mean m1, mean m2);
-	void crossover(ShortSolution * sol1, ShortSolution * sol2, ShortSolution * newSol, ShortSolution * newSol2);
+	void crossover(ShortSolution * sol1, ShortSolution * sol2);
 	void mutation(ShortSolution *sol1);
+	
 	vector <ShortSolution*> *solutions;
 	vector <ShortSolution*> *newSols;
 	int maxInterations;
 	int timeLimit;
 public:
-	Genetic(vector <ShortSolution*> *sols, int maxIterations);
-	Genetic(vector<ShortSolution*>* sols, double timeLimit);
+	Genetic(vector<ShortSolution*>* sols, int maxIterations, vector<ShortSolution*>* newPopulation);
+	Genetic(vector <ShortSolution> *sols, int maxIterations);
+	Genetic(vector<ShortSolution>* sols, double timeLimit);
 	~Genetic();
 
 	int findNearestMean(double x, double y, vector<struct mean>* m2);
